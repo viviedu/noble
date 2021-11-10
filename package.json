@@ -35,15 +35,15 @@
   ],
   "dependencies": {
     "debug": "^4.3.1",
-    "node-addon-api": "^3.2.0",
-    "serialport": "^9.2.5"
+    "node-addon-api": "^3.2.0"
   },
   "optionalDependencies": {
-    "@abandonware/bluetooth-hci-socket": "^0.5.3-8"
+    "@abandonware/bluetooth-hci-socket": "^0.5.3-8",
+    "async": "^3.2.2",
+    "serialport": "^9.2.5"
   },
   "devDependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
-    "async": "^3.2.2",
     "eslint": "^7.27.0",
     "eslint-config-semistandard": "^16.0.0",
     "eslint-config-standard": "^16.0.3",
