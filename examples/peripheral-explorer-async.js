@@ -1,4 +1,4 @@
-const noble = require('../');
+const noble = require('../')({ extended: false });
 
 const peripheralIdOrAddress = process.argv[2].toLowerCase();
 
@@ -34,7 +34,9 @@ noble.on('discover', async (peripheral) => {
     }
 
     if (serviceData) {
-      console.log(`  Service Data      = ${JSON.stringify(serviceData, null, 2)}`);
+      console.log(
+        `  Service Data      = ${JSON.stringify(serviceData, null, 2)}`
+      );
     }
 
     if (serviceUuids) {
@@ -81,7 +83,9 @@ const explore = async (peripheral) => {
 
       const descriptors = await characteristic.discoverDescriptorsAsync();
 
-      const userDescriptionDescriptor = descriptors.find((descriptor) => descriptor.uuid === '2901');
+      const userDescriptionDescriptor = descriptors.find(
+        (descriptor) => descriptor.uuid === '2901'
+      );
 
       if (userDescriptionDescriptor) {
         const data = await userDescriptionDescriptor.readValueAsync();
@@ -90,7 +94,9 @@ const explore = async (peripheral) => {
         }
       }
 
-      characteristicInfo += `\n    properties  ${characteristic.properties.join(', ')}`;
+      characteristicInfo += `\n    properties  ${characteristic.properties.join(
+        ', '
+      )}`;
 
       if (characteristic.properties.includes('read')) {
         const data = await characteristic.readAsync();
@@ -98,7 +104,9 @@ const explore = async (peripheral) => {
         if (data) {
           const string = data.toString('ascii');
 
-          characteristicInfo += `\n    value       ${data.toString('hex')} | '${string}'`;
+          characteristicInfo += `\n    value       ${data.toString(
+            'hex'
+          )} | '${string}'`;
         }
       }
 
@@ -108,3 +116,18 @@ const explore = async (peripheral) => {
 
   await peripheral.disconnectAsync();
 };
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

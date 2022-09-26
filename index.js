@@ -1,4 +1,6 @@
-const Noble = require('./lib/noble');
-const bindings = require('./lib/resolve-bindings')();
+module.exports = function (options) {
+  const Noble = require('./lib/noble');
+  const bindings = require('./lib/resolve-bindings')(options);
 
-module.exports = new Noble(bindings);
+  return new Noble(bindings);
+};

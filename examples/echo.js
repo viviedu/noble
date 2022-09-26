@@ -6,21 +6,21 @@
 // start an interval to write data to the characteristic
 
 // const noble = require('noble');
-const noble = require('..');
+const noble = require('..')({ extended: false });
 
 const ECHO_SERVICE_UUID = 'ec00';
 const ECHO_CHARACTERISTIC_UUID = 'ec0e';
 
-noble.on('stateChange', state => {
+noble.on('stateChange', (state) => {
   if (state === 'poweredOn') {
     console.log('Scanning');
-    noble.startScanning([ECHO_SERVICE_UUID]);
+    noble.startScanning([ECHO_SERVICE_UUID], false);
   } else {
     noble.stopScanning();
   }
 });
 
-noble.on('discover', peripheral => {
+noble.on('discover', (peripheral) => {
   // connect to the first peripheral that is scanned
   noble.stopScanning();
   const name = peripheral.advertisement.localName;
@@ -29,7 +29,7 @@ noble.on('discover', peripheral => {
 });
 
 function connectAndSetUp (peripheral) {
-  peripheral.connect(error => {
+  peripheral.connect((error) => {
     if (error) {
       console.error(error);
       return;
@@ -51,7 +51,11 @@ function connectAndSetUp (peripheral) {
   peripheral.on('disconnect', () => console.log('disconnected'));
 }
 
-function onServicesAndCharacteristicsDiscovered (error, services, characteristics) {
+function onServicesAndCharacteristicsDiscovered (
+  error,
+  services,
+  characteristics
+) {
   if (error) {
     console.error(error);
     return;
@@ -66,7 +70,7 @@ function onServicesAndCharacteristicsDiscovered (error, services, characteristic
   });
 
   // subscribe to be notified whenever the peripheral update the characteristic
-  echoCharacteristic.subscribe(error => {
+  echoCharacteristic.subscribe((error) => {
     if (error) {
       console.error('Error subscribing to echoCharacteristic');
     } else {
@@ -83,3 +87,18 @@ function onServicesAndCharacteristicsDiscovered (error, services, characteristic
     echoCharacteristic.write(message);
   }, 2500);
 }
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

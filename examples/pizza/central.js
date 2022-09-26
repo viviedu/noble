@@ -1,5 +1,5 @@
 /* eslint-disable handle-callback-err */
-const noble = require('../..');
+const noble = require('../..')({ extended: false });
 const pizza = require('./pizza');
 
 const pizzaServiceUuid = '13333333333333333333333333333337';
@@ -77,7 +77,9 @@ noble.on('discover', function (peripheral) {
 
             if (pizzaCrustCharacteristicUuid === characteristic.uuid) {
               pizzaCrustCharacteristic = characteristic;
-            } else if (pizzaToppingsCharacteristicUuid === characteristic.uuid) {
+            } else if (
+              pizzaToppingsCharacteristicUuid === characteristic.uuid
+            ) {
               pizzaToppingsCharacteristic = characteristic;
             } else if (pizzaBakeCharacteristicUuid === characteristic.uuid) {
               pizzaBakeCharacteristic = characteristic;
@@ -87,9 +89,11 @@ noble.on('discover', function (peripheral) {
           //
           // Check to see if we found all of our characteristics.
           //
-          if (pizzaCrustCharacteristic &&
-              pizzaToppingsCharacteristic &&
-              pizzaBakeCharacteristic) {
+          if (
+            pizzaCrustCharacteristic &&
+            pizzaToppingsCharacteristic &&
+            pizzaBakeCharacteristic
+          ) {
             //
             // We did, so bake a pizza!
             //
@@ -117,8 +121,8 @@ function bakePizza () {
       const toppings = Buffer.alloc(2);
       toppings.writeUInt16BE(
         pizza.PizzaToppings.EXTRA_CHEESE |
-        pizza.PizzaToppings.CANADIAN_BACON |
-        pizza.PizzaToppings.PINEAPPLE,
+          pizza.PizzaToppings.CANADIAN_BACON |
+          pizza.PizzaToppings.PINEAPPLE,
         0
       );
       pizzaToppingsCharacteristic.write(toppings, false, function (err) {
@@ -173,3 +177,18 @@ function bakePizza () {
     }
   });
 }
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

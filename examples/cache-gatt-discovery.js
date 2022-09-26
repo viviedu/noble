@@ -6,7 +6,7 @@
  * Prints timing information from discovered to connected to reading states.
  */
 
-const noble = require('../index');
+const noble = require('../index')({ extended: false });
 const fs = require('fs');
 
 // the sensor value to scan for, number of bits and factor for displaying it
@@ -18,7 +18,7 @@ const EXT = '.dump';
 
 noble.on('stateChange', function (state) {
   if (state === 'poweredOn') {
-    noble.startScanning();
+    noble.startScanning([], false);
   } else {
     noble.stopScanning();
   }
@@ -35,14 +35,18 @@ const meta = {
 };
 
 noble.on('discover', function (peripheral) {
-  console.log(`peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`);
+  console.log(
+    `peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`
+  );
   console.log('\thello my local name is:');
   console.log(`\t\t${peripheral.advertisement.localName}`);
   console.log();
 
   // connect to the first device with a valid name
   if (peripheral.advertisement.localName) {
-    console.log(`Connecting to  ${peripheral.address} ${peripheral.advertisement.localName}`);
+    console.log(
+      `Connecting to  ${peripheral.address} ${peripheral.advertisement.localName}`
+    );
 
     tDisco = Date.now();
 
@@ -108,7 +112,11 @@ const findServices = function (noble, peripheral) {
 
         console.log(`SRV\t${service.uuid} characteristic GATT data: `);
         for (let i = 0; i < characteristics.length; i++) {
-          console.log(`\t${service.uuid} chara.\t  ${i} ${JSON.stringify(characteristics[i])}`);
+          console.log(
+            `\t${service.uuid} chara.\t  ${i} ${JSON.stringify(
+              characteristics[i]
+            )}`
+          );
         }
       });
 
@@ -134,12 +142,16 @@ const findServices = function (noble, peripheral) {
           console.log('----------------- FINISHED');
           console.log(JSON.stringify(meta, null, 4));
           // write to file
-          fs.writeFile(meta.uuid + EXT, JSON.stringify(meta, null, 2), function (err) {
-            if (err) {
-              return console.log(err);
+          fs.writeFile(
+            meta.uuid + EXT,
+            JSON.stringify(meta, null, 2),
+            function (err) {
+              if (err) {
+                return console.log(err);
+              }
+              console.log('The data was saved to ', meta.uuid + EXT);
             }
-            console.log('The data was saved to ', meta.uuid + EXT);
-          });
+          );
 
           if (sensorCharacteristic) {
             console.log('Listening for temperature data...');
@@ -158,10 +170,29 @@ const findServices = function (noble, peripheral) {
             sensorCharacteristic.read();
           }
 
-          console.log(`Timespan from discovery to connected: ${tConn - tDisco} ms`);
-          console.log(`Timespan from connected to reading  : ${tRead - tConn} ms`);
+          console.log(
+            `Timespan from discovery to connected: ${tConn - tDisco} ms`
+          );
+          console.log(
+            `Timespan from connected to reading  : ${tRead - tConn} ms`
+          );
         }
       });
     }
   });
 };
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

@@ -1,19 +1,22 @@
 /* eslint-disable handle-callback-err */
 const async = require('async');
-const noble = require('../index');
+const noble = require('../index')({ extended: false });
 
 const peripheralIdOrAddress = process.argv[2].toLowerCase();
 
 noble.on('stateChange', function (state) {
   if (state === 'poweredOn') {
-    noble.startScanning();
+    noble.startScanning([], false);
   } else {
     noble.stopScanning();
   }
 });
 
 noble.on('discover', function (peripheral) {
-  if (peripheral.id === peripheralIdOrAddress || peripheral.address === peripheralIdOrAddress) {
+  if (
+    peripheral.id === peripheralIdOrAddress ||
+    peripheral.address === peripheralIdOrAddress
+  ) {
     noble.stopScanning();
 
     console.log(`peripheral with ID ${peripheral.id} found`);
@@ -38,7 +41,9 @@ noble.on('discover', function (peripheral) {
     }
 
     if (serviceData) {
-      console.log(`  Service Data      = ${JSON.stringify(serviceData, null, 2)}`);
+      console.log(
+        `  Service Data      = ${JSON.stringify(serviceData, null, 2)}`
+      );
     }
 
     if (serviceUuids) {
@@ -74,7 +79,7 @@ function explore (peripheral) {
 
       async.whilst(
         function () {
-          return (serviceIndex < services.length);
+          return serviceIndex < services.length;
         },
         function (callback) {
           const service = services[serviceIndex];
@@ -85,99 +90,112 @@ function explore (peripheral) {
           }
           console.log(serviceInfo);
 
-          service.discoverCharacteristics([], function (error, characteristics) {
-            if (error) {
-              console.error(error);
-              return;
-            }
+          service.discoverCharacteristics(
+            [],
+            function (error, characteristics) {
+              if (error) {
+                console.error(error);
+                return;
+              }
 
-            let characteristicIndex = 0;
+              let characteristicIndex = 0;
 
-            async.whilst(
-              function () {
-                return (characteristicIndex < characteristics.length);
-              },
-              function (callback) {
-                const characteristic = characteristics[characteristicIndex];
-                let characteristicInfo = `  ${characteristic.uuid}`;
+              async.whilst(
+                function () {
+                  return characteristicIndex < characteristics.length;
+                },
+                function (callback) {
+                  const characteristic = characteristics[characteristicIndex];
+                  let characteristicInfo = `  ${characteristic.uuid}`;
 
-                if (characteristic.name) {
-                  characteristicInfo += ` (${characteristic.name})`;
-                }
+                  if (characteristic.name) {
+                    characteristicInfo += ` (${characteristic.name})`;
+                  }
 
-                async.series([
-                  function (callback) {
-                    characteristic.discoverDescriptors(function (error, descriptors) {
-                      if (error) {
-                        console.error(error);
-                        return;
-                      }
-
-                      async.detect(
-                        descriptors,
-                        function (descriptor, callback) {
-                          if (descriptor.uuid === '2901') {
-                            return callback(descriptor);
-                          } else {
-                            return callback();
-                          }
-                        },
-                        function (userDescriptionDescriptor) {
-                          if (userDescriptionDescriptor) {
-                            userDescriptionDescriptor.readValue(function (error, data) {
-                              if (error) {
-                                console.error(error);
-                              }
-
-                              if (data) {
-                                characteristicInfo += ` (${data.toString()})`;
-                              }
-                              callback();
-                            });
-                          } else {
-                            callback();
-                          }
-                        }
-                      );
-                    });
-                  },
-                  function (callback) {
-                    characteristicInfo += `\n    properties  ${characteristic.properties.join(', ')}`;
-
-                    if (characteristic.properties.indexOf('read') !== -1) {
-                      characteristic.read(function (error, data) {
+                  async.series([
+                    function (callback) {
+                      characteristic.discoverDescriptors(function (
+                        error,
+                        descriptors
+                      ) {
                         if (error) {
                           console.error(error);
+                          return;
                         }
 
-                        if (data) {
-                          const string = data.toString('ascii');
+                        async.detect(
+                          descriptors,
+                          function (descriptor, callback) {
+                            if (descriptor.uuid === '2901') {
+                              return callback(descriptor);
+                            } else {
+                              return callback();
+                            }
+                          },
+                          function (userDescriptionDescriptor) {
+                            if (userDescriptionDescriptor) {
+                              userDescriptionDescriptor.readValue(function (
+                                error,
+                                data
+                              ) {
+                                if (error) {
+                                  console.error(error);
+                                }
 
-                          characteristicInfo += `\n    value       ${data.toString('hex')} | '${string}'`;
-                        }
-                        callback();
+                                if (data) {
+                                  characteristicInfo += ` (${data.toString()})`;
+                                }
+                                callback();
+                              });
+                            } else {
+                              callback();
+                            }
+                          }
+                        );
                       });
-                    } else {
+                    },
+                    function (callback) {
+                      characteristicInfo += `\n    properties  ${characteristic.properties.join(
+                        ', '
+                      )}`;
+
+                      if (characteristic.properties.indexOf('read') !== -1) {
+                        characteristic.read(function (error, data) {
+                          if (error) {
+                            console.error(error);
+                          }
+
+                          if (data) {
+                            const string = data.toString('ascii');
+
+                            characteristicInfo += `\n    value       ${data.toString(
+                              'hex'
+                            )} | '${string}'`;
+                          }
+                          callback();
+                        });
+                      } else {
+                        callback();
+                      }
+                    },
+                    function () {
+                      console.log(characteristicInfo);
+                      characteristicIndex++;
                       callback();
                     }
-                  },
-                  function () {
-                    console.log(characteristicInfo);
-                    characteristicIndex++;
-                    callback();
+                  ]);
+                },
+                function (error) {
+                  if (error) {
+                    console.error(error);
                   }
-                ]);
-              },
-              function (error) {
-                if (error) {
-                  console.error(error);
-                }
 
-                serviceIndex++;
-                callback();
-              }
-            );
-          });
+                  serviceIndex++;
+                  callback();
+                }
+              );
+            }
+          );
         },
         function (error) {
           if (error) {
@@ -190,3 +208,18 @@ function explore (peripheral) {
     });
   });
 }
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

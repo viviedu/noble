@@ -7,7 +7,7 @@
 
   based on code provided by: Mattias Ask (http://www.dittlof.com)
 */
-const noble = require('../index');
+const noble = require('../index')({ extended: false });
 
 const RSSI_THRESHOLD = -90;
 const EXIT_GRACE_PERIOD = 2000; // milliseconds
@@ -28,7 +28,11 @@ noble.on('discover', function (peripheral) {
       peripheral: peripheral
     };
 
-    console.log(`"${peripheral.advertisement.localName}" entered (RSSI ${peripheral.rssi}) ${new Date()}`);
+    console.log(
+      `"${peripheral.advertisement.localName}" entered (RSSI ${
+        peripheral.rssi
+      }) ${new Date()}`
+    );
   }
 
   inRange[id].lastSeen = Date.now();
@@ -36,10 +40,14 @@ noble.on('discover', function (peripheral) {
 
 setInterval(function () {
   for (const id in inRange) {
-    if (inRange[id].lastSeen < (Date.now() - EXIT_GRACE_PERIOD)) {
+    if (inRange[id].lastSeen < Date.now() - EXIT_GRACE_PERIOD) {
       const peripheral = inRange[id].peripheral;
 
-      console.log(`"${peripheral.advertisement.localName}" exited (RSSI ${peripheral.rssi}) ${new Date()}`);
+      console.log(
+        `"${peripheral.advertisement.localName}" exited (RSSI ${
+          peripheral.rssi
+        }) ${new Date()}`
+      );
 
       delete inRange[id];
     }
@@ -52,4 +60,19 @@ noble.on('stateChange', function (state) {
   } else {
     noble.stopScanning();
   }
+});
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
 });

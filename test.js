@@ -1,4 +1,4 @@
-const noble = require('./index');
+const noble = require('./index')({ extended: false });
 
 console.log('noble');
 
@@ -6,7 +6,7 @@ noble.on('stateChange', function (state) {
   console.log('on -> stateChange: ' + state);
 
   if (state === 'poweredOn') {
-    noble.startScanning();
+    noble.startScanning([], true);
   } else {
     noble.stopScanning();
   }
@@ -44,67 +44,85 @@ noble.on('discover', function (peripheral) {
 
     const serviceIndex = 0;
 
-    services[serviceIndex].on('includedServicesDiscover', function (includedServiceUuids) {
-      console.log('on -> service included services discovered ' + includedServiceUuids);
-      this.discoverCharacteristics();
-    });
+    services[serviceIndex].on(
+      'includedServicesDiscover',
+      function (includedServiceUuids) {
+        console.log(
+          'on -> service included services discovered ' + includedServiceUuids
+        );
+        this.discoverCharacteristics();
+      }
+    );
 
-    services[serviceIndex].on('characteristicsDiscover', function (characteristics) {
-      console.log('on -> service characteristics discovered ' + characteristics);
+    services[serviceIndex].on(
+      'characteristicsDiscover',
+      function (characteristics) {
+        console.log(
+          'on -> service characteristics discovered ' + characteristics
+        );
 
-      const characteristicIndex = 0;
+        const characteristicIndex = 0;
 
-      characteristics[characteristicIndex].on('read', function (data, isNotification) {
-        console.log('on -> characteristic read ' + data + ' ' + isNotification);
-        console.log(data);
+        characteristics[characteristicIndex].on(
+          'read',
+          function (data, isNotification) {
+            console.log(
+              'on -> characteristic read ' + data + ' ' + isNotification
+            );
+            console.log(data);
 
-        peripheral.disconnect();
-      });
+            peripheral.disconnect();
+          }
+        );
 
-      characteristics[characteristicIndex].on('write', function () {
-        console.log('on -> characteristic write ');
+        characteristics[characteristicIndex].on('write', function () {
+          console.log('on -> characteristic write ');
 
-        peripheral.disconnect();
-      });
-
-      characteristics[characteristicIndex].on('broadcast', function (state) {
-        console.log('on -> characteristic broadcast ' + state);
-
-        peripheral.disconnect();
-      });
-
-      characteristics[characteristicIndex].on('notify', function (state) {
-        console.log('on -> characteristic notify ' + state);
-
-        peripheral.disconnect();
-      });
-
-      characteristics[characteristicIndex].on('descriptorsDiscover', function (descriptors) {
-        console.log('on -> descriptors discover ' + descriptors);
-
-        const descriptorIndex = 0;
-
-        descriptors[descriptorIndex].on('valueRead', function (data) {
-          console.log('on -> descriptor value read ' + data);
-          console.log(data);
           peripheral.disconnect();
         });
 
-        descriptors[descriptorIndex].on('valueWrite', function () {
-          console.log('on -> descriptor value write ');
+        characteristics[characteristicIndex].on('broadcast', function (state) {
+          console.log('on -> characteristic broadcast ' + state);
+
           peripheral.disconnect();
         });
 
-        descriptors[descriptorIndex].readValue();
-        // descriptors[descriptorIndex].writeValue(new Buffer([0]));
-      });
+        characteristics[characteristicIndex].on('notify', function (state) {
+          console.log('on -> characteristic notify ' + state);
 
-      characteristics[characteristicIndex].read();
-      // characteristics[characteristicIndex].write(new Buffer('hello'));
-      // characteristics[characteristicIndex].broadcast(true);
-      // characteristics[characteristicIndex].notify(true);
-      // characteristics[characteristicIndex].discoverDescriptors();
-    });
+          peripheral.disconnect();
+        });
+
+        characteristics[characteristicIndex].on(
+          'descriptorsDiscover',
+          function (descriptors) {
+            console.log('on -> descriptors discover ' + descriptors);
+
+            const descriptorIndex = 0;
+
+            descriptors[descriptorIndex].on('valueRead', function (data) {
+              console.log('on -> descriptor value read ' + data);
+              console.log(data);
+              peripheral.disconnect();
+            });
+
+            descriptors[descriptorIndex].on('valueWrite', function () {
+              console.log('on -> descriptor value write ');
+              peripheral.disconnect();
+            });
+
+            descriptors[descriptorIndex].readValue();
+            // descriptors[descriptorIndex].writeValue(new Buffer([0]));
+          }
+        );
+
+        characteristics[characteristicIndex].read();
+        // characteristics[characteristicIndex].write(new Buffer('hello'));
+        // characteristics[characteristicIndex].broadcast(true);
+        // characteristics[characteristicIndex].notify(true);
+        // characteristics[characteristicIndex].discoverDescriptors();
+      }
+    );
 
     services[serviceIndex].discoverIncludedServices();
   });

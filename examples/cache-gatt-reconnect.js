@@ -6,7 +6,7 @@
  * Prints timing information from discovered to connected to reading states.
  */
 
-const noble = require('../index');
+const noble = require('../index')({ extended: false });
 const fs = require('fs');
 
 // the sensor value to scan for, number of bits and factor for displaying it
@@ -18,7 +18,7 @@ const EXT = '.dump';
 
 noble.on('stateChange', function (state) {
   if (state === 'poweredOn') {
-    noble.startScanning();
+    noble.startScanning([], false);
   } else {
     noble.stopScanning();
   }
@@ -35,7 +35,9 @@ let meta = {
 };
 
 noble.on('discover', function (peripheral) {
-  console.log(`peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`);
+  console.log(
+    `peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`
+  );
   console.log('\thello my local name is:');
   console.log(`\t\t${peripheral.advertisement.localName}`);
   console.log();
@@ -126,11 +128,17 @@ const setData = function (peripheral, meta) {
     const charas = meta.characteristics[service.uuid];
     console.log(`\tservice ${i} ${service} ${JSON.stringify(charas)}`);
 
-    const characteristics = noble.addCharacteristics(peripheral.uuid, service.uuid, charas);
+    const characteristics = noble.addCharacteristics(
+      peripheral.uuid,
+      service.uuid,
+      charas
+    );
 
     for (const j in characteristics) {
       const characteristic = characteristics[j];
-      console.log(`\t\tcharac ${service.uuid} ${j} ${characteristic} ${characteristic.rawProps}`);
+      console.log(
+        `\t\tcharac ${service.uuid} ${j} ${characteristic} ${characteristic.rawProps}`
+      );
       if (characteristic.name === CHANNEL) {
         console.log(`\t\t\t-->found ${CHANNEL} characteristic!`);
         sensorCharacteristic = characteristic;
@@ -139,3 +147,18 @@ const setData = function (peripheral, meta) {
   }
   return sensorCharacteristic;
 };
+
+process.on('SIGINT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGQUIT', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});
+
+process.on('SIGTERM', function () {
+  console.log('Caught interrupt signal');
+  noble.stopScanning(() => process.exit());
+});

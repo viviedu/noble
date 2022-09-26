@@ -23,7 +23,7 @@ __Note:__ macOS / Mac OS X, Linux, FreeBSD and Windows are currently the only su
 ```javascript
 // Read the battery level of the first found peripheral exposing the Battery Level characteristic
 
-const noble = require('@abandonware/noble');
+const noble = require('@abandonware/noble')({extended: false});
 
 noble.on('stateChange', async (state) => {
   if (state === 'poweredOn') {
@@ -105,6 +105,16 @@ Make sure `node` is on your `PATH`. If it's not, some options:
  * Symlink `nodejs` to `node`: `sudo ln -s /usr/bin/nodejs /usr/bin/node`
  * [Install Node.js using the NodeSource package](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
+If you are having trouble connecting to BLE devices on a Raspberry Pi, you should disable the `pnat` plugin. Add the following line at the bottom of `/etc/bluetooth/main.conf`:
+
+```
+DisablePlugins=pnat
+```
+
+Then restart the system.
+
+See [Issue #425 · OpenWonderLabs/homebridge-switchbot](https://github.com/OpenWonderLabs/homebridge-switchbot/issues/425#issuecomment-1190864279).
+
 ##### Fedora and other RPM-based distributions
 
 See the [generic Linux notes above](#linux) first.
@@ -148,6 +158,7 @@ npm install --global --production windows-build-tools
 ```
 
 [node-bluetooth-hci-socket prerequisites](#windows)
+   * Compatible Bluetooth 5.0 Zephyr HCI-USB adapter (you need to add BLUETOOTH_HCI_SOCKET_USB_VID and BLUETOOTH_HCI_SOCKET_USB_PID to the process env)
    * Compatible Bluetooth 4.0 USB adapter
    * [WinUSB](https://msdn.microsoft.com/en-ca/library/windows/hardware/ff540196(v=vs.85).aspx) driver setup for Bluetooth 4.0 USB adapter, using [Zadig tool](http://zadig.akeo.ie/)
 
@@ -155,7 +166,7 @@ See [@don](https://github.com/don)'s setup guide on [Bluetooth LE with Node.js a
 
 #### Docker
 
-Make sur your container runs with `--network=host` options and all specific environment preriquisites are verified.
+Make sure your container runs with `--network=host` options and all specific environment preriquisites are verified.
 
 ### Installing and using the package
 
@@ -163,8 +174,14 @@ Make sur your container runs with `--network=host` options and all specific envi
 npm install @abandonware/noble
 ```
 
+In Windows OS add your custom hci-usb dongle to the process env
+```sh
+set BLUETOOTH_HCI_SOCKET_USB_VID=xxx
+set BLUETOOTH_HCI_SOCKET_USB_PID=xxx
+```
+
 ```javascript
-const noble = require('@abandonware/noble');
+const noble = require('@abandonware/noble')({extended: false});
 ```
 
 ## API docs
@@ -675,7 +692,8 @@ const Noble = require('@abandonware/noble/lib/noble');
 
 const params = {
   deviceId: 0,
-  userChannel: true
+  userChannel: true,
+  extended: false
 };
 
 const noble = new Noble(new HCIBindings(params));
