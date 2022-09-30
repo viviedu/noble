@@ -10,7 +10,7 @@
   "version": "1.9.2-16",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stoprocent/noble.git"
+    "url": "git+https://github.com/stoprocent/noble.git"
   },
   "bugs": {
     "url": "https://github.com/stoprocent/noble/issues"
@@ -42,8 +42,8 @@
   },
   "optionalDependencies": {
     "@abandonware/bluetooth-hci-socket": "^0.5.3-8",
-    "async": "^3.2.2",
-    "serialport": "^9.2.5"
+    "async": "^3.2.4",
+    "serialport": "^10.4.0"
   },
   "devDependencies": {
     "async": "^3.2.0",
@@ -86,5 +86,11 @@
     "napi_versions": [
       4
     ]
+  },
+  "homepage": "https://github.com/stoprocent/noble#readme",
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
   }
 }
