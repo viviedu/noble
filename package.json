@@ -7,7 +7,7 @@
   "license": "MIT",
   "name": "@stoprocent/noble",
   "description": "A Node.js BLE (Bluetooth Low Energy) central library.",
-  "version": "1.9.2-16",
+  "version": "1.10.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stoprocent/noble.git"
@@ -35,13 +35,9 @@
     "win32"
   ],
   "dependencies": {
-    "debug": "^4.3.1",
-    "napi-thread-safe-callback": "^0.0.6",
-    "node-addon-api": "^4.2.0",
-    "node-gyp-build": "^4.3.0"
+    "debug": "^4.3.1"
   },
   "optionalDependencies": {
-    "@abandonware/bluetooth-hci-socket": "^0.5.3-8",
     "async": "^3.2.4",
     "serialport": "^10.4.0"
   },
@@ -69,13 +65,6 @@
     "install": "node-gyp-build",
     "lint": "eslint \"**/*.js\"",
     "lint-fix": "eslint \"**/*.js\" --fix",
-    "prebuild": "prebuildify --napi --strip",
-    "prebuild-darwin": "prebuildify --napi --strip --arch x64+arm64",
-    "prebuild-win32": "prebuildify --napi --strip",
-    "prebuild-linux": "prebuildify --napi --strip",
-    "prebuild-download": "prebuildify-ci download",
-    "pretest": "npm run rebuild",
-    "rebuild": "node-gyp rebuild",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov > .nyc_output/lcov.info",
     "test": "cross-env NODE_ENV=test mocha --recursive \"test/*.test.js\" \"test/**/*.test.js\" --exit"
   },
