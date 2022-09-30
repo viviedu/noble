@@ -62,7 +62,6 @@
     "ws": "^8.3.0"
   },
   "scripts": {
-    "install": "node-gyp-build",
     "lint": "eslint \"**/*.js\"",
     "lint-fix": "eslint \"**/*.js\" --fix",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov > .nyc_output/lcov.info",
