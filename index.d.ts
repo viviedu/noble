@@ -15,48 +15,50 @@
 
 import events = require("events");
 
-declare function noble(option?: any);
+declare function noble(option?: any): noble.Noble;
 
 declare namespace noble
 {
-    /**
-     * @deprecated
-     */
-    export function startScanning(callback?: (error?: Error) => void): void;
-    /**
-     * @deprecated
-     */
-    export function startScanning(serviceUUIDs: string[], callback?: (error?: Error) => void): void;
-    export function startScanning(serviceUUIDs?: string[], allowDuplicates?: boolean, callback?: (error?: Error) => void): void;
-    export function startScanningAsync(serviceUUIDs?: string[], allowDuplicates?: boolean): Promise<void>;
-    export function stopScanning(callback?: () => void): void;
-    export function stopScanningAsync(): Promise<void>;
-    export function cancelConnect(peripheralUuid: string, options?: object): void;
-    export function reset(): void;
+    export interface Noble {
+        /**
+         * @deprecated
+         */
+        startScanning(callback?: (error?: Error) => void): void;
+        /**
+         * @deprecated
+         */
+        startScanning(serviceUUIDs: string[], callback?: (error?: Error) => void): void;
+        startScanning(serviceUUIDs?: string[], allowDuplicates?: boolean, callback?: (error?: Error) => void): void;
+        startScanningAsync(serviceUUIDs?: string[], allowDuplicates?: boolean): Promise<void>;
+        stopScanning(callback?: () => void): void;
+        stopScanningAsync(): Promise<void>;
+        cancelConnect(peripheralUuid: string, options?: object): void;
+        reset(): void;
 
-    export function on(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
-    export function on(event: "scanStart", listener: () => void): events.EventEmitter;
-    export function on(event: "scanStop", listener: () => void): events.EventEmitter;
-    export function on(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
-    export function on(event: string, listener: Function): events.EventEmitter;
+        on(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
+        on(event: "scanStart", listener: () => void): events.EventEmitter;
+        on(event: "scanStop", listener: () => void): events.EventEmitter;
+        on(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
+        on(event: string, listener: Function): events.EventEmitter;
 
-    export function once(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
-    export function once(event: "scanStart", listener: () => void): events.EventEmitter;
-    export function once(event: "scanStop", listener: () => void): events.EventEmitter;
-    export function once(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
-    export function once(event: string, listener: Function): events.EventEmitter;
+        once(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
+        once(event: "scanStart", listener: () => void): events.EventEmitter;
+        once(event: "scanStop", listener: () => void): events.EventEmitter;
+        once(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
+        once(event: string, listener: Function): events.EventEmitter;
 
-    export function removeListener(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
-    export function removeListener(event: "scanStart", listener: () => void): events.EventEmitter;
-    export function removeListener(event: "scanStop", listener: () => void): events.EventEmitter;
-    export function removeListener(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
-    export function removeListener(event: string, listener: Function): events.EventEmitter;
+        removeListener(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
+        removeListener(event: "scanStart", listener: () => void): events.EventEmitter;
+        removeListener(event: "scanStop", listener: () => void): events.EventEmitter;
+        removeListener(event: "discover", listener: (peripheral: Peripheral) => void): events.EventEmitter;
+        removeListener(event: string, listener: Function): events.EventEmitter;
 
-    export function removeAllListeners(event?: string): events.EventEmitter;
+        removeAllListeners(event?: string): events.EventEmitter;
 
-    export var state: string;
+        state: string;
 
-    export var _bindings: any;
+        _bindings: any;
+    }
 
     export interface ServicesAndCharacteristics {
         services: Service[];
