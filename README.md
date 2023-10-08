@@ -68,27 +68,9 @@ const noble = require('@abandonware/noble/with-custom-binding')({extended: true}
 
 ### Prerequisites
 
-#### UART
+#### UART (Any OS)
 
-The reason for this fork was to create more universal transport that can work across multiple operating systems.
-Idea is to use Zephyr HCI over UART firmware and create noble driver to interface with HCI over UART.
-
-##### Known Issues
-What I have found so far that when using extended MTU and sending large amount of data Zephyr stops responding in rare cases. I have played with Zephyr configuration parameters in order to increase buffer sizes but with some luck. Sometimes when transfering fast, large payloads, with high MTU you can still hit the limit and Zephyr needs to be rebooted.
-
-##### How to use this?
-
-1. You will need NRF5x module (e.g. nRF52840 PDK)
-2. 	If you have `nRF52840 PDK` you can in fact just use compiled HEX [misc/nrf52840dk.hex](misc/nrf52840dk.hex) (Buad Rate set to `1000000`)
-3. If you want to compile it yourself:
-	1. You will need to install Zephyr ([https://docs.zephyrproject.org/latest/getting_started/index.html](https://docs.zephyrproject.org/latest/getting_started/index.html))
-	2. Compile HCI UART Example - `west build -p auto -b <your-board-name> zephyr/samples/bluetooth/hci_uart`
-		- e.g. When using `nRF52840 PDK` call `west build -p auto -b nrf52840dk_nrf52840 zephyr/samples/bluetooth/hci_uart`
-4. Flash the firmware to Nordic Board e.g. using `nrfjprog`
-		- e.g. `nrfjprog -f NRF52 --program misc/nrf52840dk.hex –-chiperase --reset`
-5. When you get a nordic board connected to the PC/Mac etc. with UART interface you are good to go.
-6. In order to run any example from the examples folder or your own code you have to provide UART port by defining env variable: `NOBLE_HCI_UART_PORT`. Optionally if you use different Baud Rate you can change it by specifing `NOBLE_HCI_UART_BAUD_RATE`. Default value is `1000000`
-7. e.g. `NOBLE_HCI_UART_PORT=/dev/tty.usbmodem0006837533091 node examples/peripheral-explorer.js b8:27:eb:83:9b:19`
+Please refer to [https://github.com/stoprocent/node-bluetooth-hci-socket#uartserial-any-os](https://github.com/stoprocent/node-bluetooth-hci-socket#uartserial-any-os)
 
 #### OS X
 
