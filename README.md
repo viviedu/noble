@@ -1,5 +1,7 @@
 # ![noble](assets/noble-logo.png)
 
+[![npm version](https://badgen.net/npm/v/@abandonware/noble)](https://www.npmjs.com/package/@abandonware/noble)
+[![npm downloads](https://badgen.net/npm/dt/@abandonware/noble)](https://www.npmjs.com/package/@abandonware/noble)
 [![Build Status](https://travis-ci.org/abandonware/noble.svg?branch=master)](https://travis-ci.org/abandonware/noble)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/abandonware/noble?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![OpenCollective](https://opencollective.com/noble/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/noble/sponsors/badge.svg)](#sponsors)
@@ -23,7 +25,7 @@ __Note:__ macOS / Mac OS X, Linux, FreeBSD and Windows are currently the only su
 ```javascript
 // Read the battery level of the first found peripheral exposing the Battery Level characteristic
 
-const noble = require('@abandonware/noble')({extended: false});
+const noble = require('@abandonware/noble');
 
 noble.on('stateChange', async (state) => {
   if (state === 'poweredOn') {
@@ -42,6 +44,12 @@ noble.on('discover', async (peripheral) => {
   await peripheral.disconnectAsync();
   process.exit(0);
 });
+```
+## Use Noble With BLE5 Extended Features With HCI 
+
+```javascript
+const noble = require('@abandonware/noble/with-custom-binding')({extended: true});
+
 ```
 
 ## Installation
@@ -181,7 +189,7 @@ set BLUETOOTH_HCI_SOCKET_USB_PID=xxx
 ```
 
 ```javascript
-const noble = require('@abandonware/noble')({extended: false});
+const noble = require('@abandonware/noble');
 ```
 
 ## API docs
@@ -693,7 +701,7 @@ const Noble = require('@abandonware/noble/lib/noble');
 const params = {
   deviceId: 0,
   userChannel: true,
-  extended: false
+  extended: false //ble5 extended features
 };
 
 const noble = new Noble(new HCIBindings(params));
