@@ -1,3 +1,6 @@
+## Version 1.11.4
+* hci-socket binding: use latest bluetooth-hci-socket dependency (~0.6.2)
+
 ## Version 1.9.1
 
  * Don't forget previously discovered services and characteristics ([@elafargue](https://github.com/elafargue))
