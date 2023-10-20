@@ -16,7 +16,7 @@ jobs:
             os: macos-11
             node: x64
             command: prebuildify
-            args: --arch x64+arm64
+            args: --arch x64+arm64 --openssl_fips=
           - name: win32-x86
             os: windows-2019
             node: x86
