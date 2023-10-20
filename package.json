@@ -2,7 +2,8 @@
   "author": "Sandeep Mistry",
   "maintainers": [
     "Jacob Rosenthal",
-    "Luis Montes"
+    "Luis Montes",
+    "Marek Serafin"
   ],
   "license": "MIT",
   "name": "@stoprocent/noble",
@@ -28,17 +29,11 @@
   "engines": {
     "node": ">=6"
   },
-  "os": [
-    "darwin",
-    "linux",
-    "freebsd",
-    "win32"
-  ],
   "dependencies": {
     "debug": "^4.3.4",
     "napi-thread-safe-callback": "^0.0.6",
-    "node-addon-api": "^7.0.0",
-    "node-gyp-build": "^4.6.0"
+    "node-addon-api": "^4.3.0",
+    "node-gyp-build": "^4.5.0"
   },
   "optionalDependencies": {
     "@stoprocent/bluetooth-hci-socket": "^0.6.4"
@@ -69,7 +64,7 @@
     "install": "node-gyp-build",
     "lint": "eslint \"**/*.js\"",
     "lint-fix": "eslint \"**/*.js\" --fix",
-    "prebuildify": "prebuildify --napi --force --strip --verbose",
+    "prebuildify": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
     "prebuildify-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
     "semantic-release": "semantic-release",
     "pretest": "npm run rebuild",
