@@ -34,7 +34,7 @@
     "node-gyp-build": "^4.5.0"
   },
   "optionalDependencies": {
-    "@stoprocent/bluetooth-hci-socket": "^1.1.1"
+    "@stoprocent/bluetooth-hci-socket": "^1.1.2"
   },
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
