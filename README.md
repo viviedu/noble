@@ -1,14 +1,14 @@
 # ![noble](assets/noble-logo.png)
 
-[![npm version](https://badgen.net/npm/v/@abandonware/noble)](https://www.npmjs.com/package/@abandonware/noble)
-[![npm downloads](https://badgen.net/npm/dt/@abandonware/noble)](https://www.npmjs.com/package/@abandonware/noble)
-[![Build Status](https://travis-ci.org/abandonware/noble.svg?branch=master)](https://travis-ci.org/abandonware/noble)
+[![npm version](https://badgen.net/npm/v/@stoprocent/noble)](https://www.npmjs.com/package/@stoprocent/noble)
+[![npm downloads](https://badgen.net/npm/dt/@stoprocent/noble)](https://www.npmjs.com/package/@stoprocent/noble)
+[![Build Status](https://travis-ci.org/stoprocent/noble.svg?branch=master)](https://travis-ci.org/stoprocent/noble)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/abandonware/noble?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![OpenCollective](https://opencollective.com/noble/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/noble/sponsors/badge.svg)](#sponsors)
 
 A Node.js BLE (Bluetooth Low Energy) central module.
 
-Want to implement a peripheral? Check out [bleno](https://github.com/abandonware/bleno).
+Want to implement a peripheral? Check out [bleno](https://github.com/stoprocent/bleno).
 
 __Note:__ macOS / Mac OS X, Linux, FreeBSD and Windows are currently the only supported OSes.
 
@@ -25,7 +25,7 @@ __Note:__ macOS / Mac OS X, Linux, FreeBSD and Windows are currently the only su
 ```javascript
 // Read the battery level of the first found peripheral exposing the Battery Level characteristic
 
-const noble = require('@abandonware/noble');
+const noble = require('@stoprocent/noble');
 
 noble.on('stateChange', async (state) => {
   if (state === 'poweredOn') {
@@ -48,7 +48,7 @@ noble.on('discover', async (peripheral) => {
 ## Use Noble With BLE5 Extended Features With HCI 
 
 ```javascript
-const noble = require('@abandonware/noble/with-custom-binding')({extended: true});
+const noble = require('@stoprocent/noble/with-custom-binding')({extended: true});
 
 ```
 
@@ -71,6 +71,38 @@ const noble = require('@abandonware/noble/with-custom-binding')({extended: true}
 #### UART (Any OS)
 
 Please refer to [https://github.com/stoprocent/node-bluetooth-hci-socket#uartserial-any-os](https://github.com/stoprocent/node-bluetooth-hci-socket#uartserial-any-os)
+
+##### Example 1 (UART port spcified as enviromental variable)
+
+```bash
+$ export BLUETOOTH_HCI_SOCKET_UART_PORT=/dev/tty...
+$ export BLUETOOTH_HCI_SOCKET_UART_BAUDRATE=1000000
+```
+
+__NOTE:__ `BLUETOOTH_HCI_SOCKET_UART_BAUDRATE` defaults to `1000000` so only needed if different.
+
+```javascript
+const noble = require('@stoprocent/noble');
+```
+
+##### Example 2 (UART port spcified in `bindParams`)
+
+```bash
+$ export BLUETOOTH_HCI_SOCKET_FORCE_UART=1
+```
+
+```javascript
+const noble = require('@stoprocent/noble/with-custom-binding') ( { 
+  bindParams: { 
+    uart: { 
+      port: '/dev/tty...', 
+      baudRate: 1000000
+    } 
+  } 
+} );
+```
+
+__NOTE:__ There is a [UART code example](examples/uart-bind-params.js) in the `/examples` directory.
 
 #### OS X
 
@@ -161,7 +193,7 @@ Make sure your container runs with `--network=host` options and all specific env
 ### Installing and using the package
 
 ```sh
-npm install @abandonware/noble
+npm install @stoprocent/noble
 ```
 
 In Windows OS add your custom hci-usb dongle to the process env
@@ -171,7 +203,7 @@ set BLUETOOTH_HCI_SOCKET_USB_PID=xxx
 ```
 
 ```javascript
-const noble = require('@abandonware/noble');
+const noble = require('@stoprocent/noble');
 ```
 
 ## API docs
@@ -208,6 +240,7 @@ API structure:
 
 * [Scanning and discovery](#scanning-and-discovery)
   * [_Event: Adapter state changed_](#event-adapter-state-changed)
+  * [Set address](#set-address)
   * [Start scanning](#start-scanning)
   * [_Event: Scanning started_](#event-scanning-started)
   * [Stop scanning](#stop-scanning)
@@ -269,6 +302,14 @@ noble.on('stateChange', callback(state));
 * `unauthorized`
 * `poweredOff`
 * `poweredOn`
+
+#### Set address
+
+```javascript
+noble.setAddress('00:11:22:33:44:55'); // set adapter's mac address
+```
+__NOTE:__ Curently this feature is only supported on HCI as it's using vendor specific commands. Source of the commands is based on the [BlueZ bdaddr.c](https://github.com/pauloborges/bluez/blob/master/tools/bdaddr.c).
+__NOTE:__ `noble.state` must be `poweredOn` before address can be set. `noble.on('stateChange', callback(state));` can be used to listen for state change events.
 
 #### Start scanning
 
@@ -643,7 +684,7 @@ descriptor.once('valueWrite');
 By default, noble will select appropriate Bluetooth device bindings based on your platform. You can provide custom bindings using the `with-bindings` module.
 
 ```javascript
-var noble = require('@abandonware/noble/with-bindings')(require('./my-custom-bindings'));
+var noble = require('@stoprocent/noble/with-bindings')(require('./my-custom-bindings'));
 ```
 
 ### Running without root/sudo (Linux-specific)
@@ -677,8 +718,8 @@ sudo NOBLE_HCI_DEVICE_ID=1 node <your file>.js
 If you are using multiple HCI devices in one setup you can run two instances of noble with different binding configurations by initializing them seperatly in code:
 
 ```
-const HCIBindings = require('@abandonware/noble/lib/hci-socket/bindings');
-const Noble = require('@abandonware/noble/lib/noble');
+const HCIBindings = require('@stoprocent/noble/lib/hci-socket/bindings');
+const Noble = require('@stoprocent/noble/lib/noble');
 
 const params = {
   deviceId: 0,
