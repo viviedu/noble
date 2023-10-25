@@ -267,49 +267,48 @@ describe('hci-socket hci', () => {
   });
 
   describe('setAddress', () => {
-    
-    it('should write vendor specific (Linux Foundation) command based on read local version response', () => {    
+    it('should write vendor specific (Linux Foundation) command based on read local version response', () => {
       hci.readBdAddr = sinon.spy();
       hci.setScanEnabled = sinon.spy();
       hci.setScanParameters = sinon.spy();
-      
+
       const cmd = 4097;
       const status = 0;
       // hciVer=12, hciRev=0, lmpVer=12, manufacturer=1521, lmpSubVer=65535
       const result = Buffer.from([0x0C, 0x00, 0x00, 0x0C, 0xF1, 0x05, 0xFF, 0xFF]);
 
       hci.processCmdCompleteEvent(cmd, status, result);
-      
-      hci.setAddress("11:22:33:44:55:66");
+
+      hci.setAddress('11:22:33:44:55:66');
       assert.calledOnceWithExactly(hci._socket.write, Buffer.from([0x01, 0x06, 0xfc, 0x06, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11]));
     });
 
-    it('should write vendor specific (Ericsson) command based on manufacturer value (', () => {    
+    it('should write vendor specific (Ericsson) command based on manufacturer value (', () => {
       hci._manufacturer = 0;
       hci.readBdAddr = sinon.spy();
-      hci.setAddress("11:22:33:44:55:66");
+      hci.setAddress('11:22:33:44:55:66');
       assert.calledOnceWithExactly(hci._socket.write, Buffer.from([0x01, 0x0d, 0xfc, 0x06, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11]));
     });
 
-    it('should write vendor specific (Texas Instrument) command based on manufacturer value', () => {    
+    it('should write vendor specific (Texas Instrument) command based on manufacturer value', () => {
       hci._manufacturer = 13;
       hci.readBdAddr = sinon.spy();
-      hci.setAddress("11:22:33:44:55:66");
+      hci.setAddress('11:22:33:44:55:66');
       assert.calledOnceWithExactly(hci._socket.write, Buffer.from([0x01, 0x06, 0xfc, 0x06, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11]));
     });
 
-    it('should write vendor specific (BCM) command based on manufacturer value', () => {    
+    it('should write vendor specific (BCM) command based on manufacturer value', () => {
       hci._manufacturer = 15;
       hci.readBdAddr = sinon.spy();
-      hci.setAddress("11:22:33:44:55:66");
+      hci.setAddress('11:22:33:44:55:66');
       assert.calledOnceWithExactly(hci._socket.write, Buffer.from([0x01, 0x01, 0xfc, 0x06, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11]));
     });
 
-    it('should not write vendor specific command', () => {    
-      hci.setAddress("11:22:33:44:55:66");
+    it('should not write vendor specific command', () => {
+      hci.setAddress('11:22:33:44:55:66');
       assert.notCalled(hci._socket.write);
     });
-  })
+  });
 
   describe('setLeEventMask', () => {
     it('should setLeEventMask', () => {
