@@ -44,7 +44,7 @@ describe('hci-socket hci', () => {
       assert.calledWithMatch(hci._socket.on, 'data', sinon.match.func);
       assert.calledWithMatch(hci._socket.on, 'error', sinon.match.func);
 
-      assert.calledOnceWithExactly(hci._socket.bindUser, deviceId);
+      assert.calledOnceWithExactly(hci._socket.bindUser, deviceId, undefined);
       assert.calledOnceWithExactly(hci._socket.start);
 
       assert.calledOnceWithExactly(hci.reset);
@@ -61,7 +61,7 @@ describe('hci-socket hci', () => {
       assert.calledWithMatch(hci._socket.on, 'data', sinon.match.func);
       assert.calledWithMatch(hci._socket.on, 'error', sinon.match.func);
 
-      assert.calledOnceWithExactly(hci._socket.bindRaw, deviceId);
+      assert.calledOnceWithExactly(hci._socket.bindRaw, deviceId, undefined);
       assert.calledOnceWithExactly(hci._socket.start);
 
       assert.calledOnceWithExactly(hci.pollIsDevUp);
