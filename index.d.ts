@@ -28,6 +28,8 @@ export declare function stopScanningAsync(): Promise<void>;
 export declare function cancelConnect(peripheralUuid: string, options?: object): void;
 export declare function reset(): void;
 
+export declare function setAddress(address: string): void;
+
 export declare function on(event: "stateChange", listener: (state: string) => void): events.EventEmitter;
 export declare function on(event: "scanStart", listener: () => void): events.EventEmitter;
 export declare function on(event: "scanStop", listener: () => void): events.EventEmitter;
