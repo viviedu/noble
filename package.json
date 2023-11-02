@@ -31,7 +31,7 @@
     "debug": "^4.3.4",
     "napi-thread-safe-callback": "^0.0.6",
     "node-addon-api": "^4.3.0",
-    "node-gyp-build": "^4.5.0"
+    "node-gyp-build": "^4.6.1"
   },
   "optionalDependencies": {
     "@stoprocent/bluetooth-hci-socket": "^1.1.4"
@@ -47,7 +47,7 @@
     "eslint-plugin-n": "^15.6.0",
     "eslint-plugin-promise": "^6.1.1",
     "mocha": "^10.2.0",
-    "node-gyp": "^9.4.0",
+    "node-gyp": "^10.0.0",
     "nyc": "^15.1.0",
     "prebuildify": "^5.0.1",
     "prebuildify-cross": "5.0.0",
