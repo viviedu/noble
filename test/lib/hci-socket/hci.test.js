@@ -40,9 +40,10 @@ describe('hci-socket hci', () => {
       hci._userChannel = 'userChannel';
       hci.init();
 
-      assert.callCount(hci._socket.on, 2);
+      assert.callCount(hci._socket.on, 3);
       assert.calledWithMatch(hci._socket.on, 'data', sinon.match.func);
       assert.calledWithMatch(hci._socket.on, 'error', sinon.match.func);
+      assert.calledWithMatch(hci._socket.on, 'state', sinon.match.func);
 
       assert.calledOnceWithExactly(hci._socket.bindUser, deviceId, undefined);
       assert.calledOnceWithExactly(hci._socket.start);
@@ -57,9 +58,10 @@ describe('hci-socket hci', () => {
       hci._bound = false;
       hci.init();
 
-      assert.callCount(hci._socket.on, 2);
+      assert.callCount(hci._socket.on, 3);
       assert.calledWithMatch(hci._socket.on, 'data', sinon.match.func);
       assert.calledWithMatch(hci._socket.on, 'error', sinon.match.func);
+      assert.calledWithMatch(hci._socket.on, 'state', sinon.match.func);
 
       assert.calledOnceWithExactly(hci._socket.bindRaw, deviceId, undefined);
       assert.calledOnceWithExactly(hci._socket.start);
@@ -76,9 +78,10 @@ describe('hci-socket hci', () => {
       hci._bound = true;
       hci.init();
 
-      assert.callCount(hci._socket.on, 2);
+      assert.callCount(hci._socket.on, 3);
       assert.calledWithMatch(hci._socket.on, 'data', sinon.match.func);
       assert.calledWithMatch(hci._socket.on, 'error', sinon.match.func);
+      assert.calledWithMatch(hci._socket.on, 'state', sinon.match.func);
 
       assert.notCalled(hci._socket.bindRaw);
       assert.calledOnceWithExactly(hci._socket.start);
