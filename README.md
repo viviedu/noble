@@ -245,6 +245,7 @@ API structure:
   * [_Event: Scanning started_](#event-scanning-started)
   * [Stop scanning](#stop-scanning)
   * [_Event: Scanning stopped_](#event-scanning-stopped)
+  * [Connect by UUID / Address](#connect-by-uuid)
   * [_Event: Peripheral discovered_](#event-peripheral-discovered)
   * [_Event: Warning raised_](#event-warning-raised)
 * [Reset device](#reset-device)
@@ -354,6 +355,54 @@ noble.on('scanStop', callback);
 The event is emitted when:
 * Scanning is stopped
 * Another application stops scanning
+
+#### Connect by UUID
+
+The `connect` function is used to establish a Bluetooth Low Energy connection to a peripheral device using its UUID. It provides both callback-based and Promise-based interfaces.
+
+##### Usage
+
+```typescript
+// Callback-based usage
+connect(peripheralUuid: string, options?: object, callback?: (error?: Error, peripheral: Peripheral) => void): void;
+
+// Promise-based usage
+connectAsync(peripheralUuid: string, options?: object): Promise<Peripheral>;
+```
+
+##### Parameters
+- `peripheralUuid`: The UUID of the peripheral to connect to.
+- `options`: Optional parameters for the connection (this may include connection interval, latency, supervision timeout, etc.).
+- `callback`: An optional callback that returns an error or the connected peripheral object.
+
+##### Description
+The `connect` function initiates a connection to a BLE peripheral. The function immediately returns, and the actual connection result is provided asynchronously via the callback or Promise. If the peripheral is successfully connected, a `Peripheral` object representing the connected device is provided.
+
+##### Example
+
+```javascript
+const noble = require('noble');
+
+// Using callback
+noble.connect('1234567890abcdef', {}, (error, peripheral) => {
+  if (error) {
+    console.error('Connection error:', error);
+  } else {
+    console.log('Connected to:', peripheral.uuid);
+  }
+});
+
+// Using async/await
+async function connectPeripheral() {
+  try {
+    const peripheral = await noble.connectAsync('1234567890abcdef');
+    console.log('Connected to:', peripheral.uuid);
+  } catch (error) {
+    console.error('Connection error:', error);
+  }
+}
+connectPeripheral();
+```
 
 
 #### _Event: Peripheral discovered_

@@ -135,12 +135,12 @@ describe('hci-socket bindings', () => {
     it('missing peripheral, no queue', () => {
       bindings._hci.createLeConn = fake.resolves(null);
 
-      bindings.connect('peripheralUuid', 'parameters');
+      bindings.connect('112233445566', 'parameters');
 
-      should(bindings._pendingConnectionUuid).eql('peripheralUuid');
+      should(bindings._pendingConnectionUuid).eql('112233445566');
 
       assert.calledOnce(bindings._hci.createLeConn);
-      assert.calledWith(bindings._hci.createLeConn, undefined, undefined, 'parameters');
+      assert.calledWith(bindings._hci.createLeConn, '11:22:33:44:55:66', 'random', 'parameters');
     });
 
     it('existing peripheral, no queue', () => {

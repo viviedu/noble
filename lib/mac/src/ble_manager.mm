@@ -18,6 +18,7 @@
         self->emit.Wrap(receiver, callback);
         self.dispatchQueue = dispatch_queue_create("CBqueue", 0);
         self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:self.dispatchQueue];
+        self.discovered = [NSMutableSet set];
         self.peripherals = [NSMutableDictionary dictionaryWithCapacity:10];
     }
     return self;
@@ -40,11 +41,13 @@
 
 - (void)stopScan {
     [self.centralManager stopScan];
+    [self.discovered removeAllObjects];
     emit.ScanState(false);
 }
 
 - (void) centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI {
     std::string uuid = getUuid(peripheral);
+    [self.discovered addObject:getNSUuid(peripheral)];
 
     Peripheral p;
     p.address = getAddress(uuid, &p.addressType);
@@ -93,7 +96,11 @@
 - (BOOL)connect:(NSString*) uuid {
     CBPeripheral *peripheral = [self.peripherals objectForKey:uuid];
     if(!peripheral) {
-        NSArray* peripherals = [self.centralManager retrievePeripheralsWithIdentifiers:@[[[NSUUID alloc] initWithUUIDString:uuid]]];
+        NSUUID *identifier = [[NSUUID alloc] initWithUUIDString:uuid];
+        if (!identifier) {
+            return NO;
+        }
+        NSArray* peripherals = [self.centralManager retrievePeripheralsWithIdentifiers:@[identifier]];
         peripheral = [peripherals firstObject];
         if(peripheral) {
             peripheral.delegate = self;
@@ -108,6 +115,16 @@
 }
 
 - (void) centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
+    // Check if peripheral was known
+    if ([self.discovered containsObject:getNSUuid(peripheral)] == false) {
+        // The peripheral was connected without being discovered by this app instance
+        // Optionally simulate discovery using dummy or last known advertisement data and RSSI
+        NSDictionary<NSString *, id> *advertisementData = @{ }; // Placeholder, use actual last known data if available
+        NSNumber *RSSI = @127; // Placeholder RSSI, use actual last known value if available
+
+        // Simulate discovery handling
+        [self centralManager:central didDiscoverPeripheral:peripheral advertisementData:advertisementData RSSI:RSSI];
+    }
     std::string uuid = getUuid(peripheral);
     emit.Connected(uuid, "");
 }
