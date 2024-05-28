@@ -381,7 +381,7 @@ The `connect` function initiates a connection to a BLE peripheral. The function 
 ##### Example
 
 ```javascript
-const noble = require('noble');
+const noble = require('@stoprocent/noble');
 
 // Using callback
 noble.connect('1234567890abcdef', {}, (error, peripheral) => {
