@@ -22,7 +22,7 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 20.x
-    - run: npm i typescript
+    - run: npm i typescript @types/node
     - run: npx tsc *.d.ts
   test:
     runs-on: ${{ matrix.config.os }}
