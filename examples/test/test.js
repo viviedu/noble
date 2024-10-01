@@ -1,4 +1,4 @@
-const noble = require('./with-custom-binding')({ extended: true });
+const noble = require('../../index');
 
 console.log('noble');
 
