@@ -27,6 +27,10 @@
   "engines": {
     "node": ">=14"
   },
+  "os": [
+    "darwin",
+    "linux"
+  ],
   "dependencies": {
     "debug": "^4.3.7",
     "napi-thread-safe-callback": "^0.0.6",
